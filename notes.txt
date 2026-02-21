@@ -1,0 +1,128 @@
+# crate project without install composer, php etc for only locally
+
+docker run --rm \
+  -v $(pwd):/app \
+  -w /app \
+  composer create-project laravel/laravel my-app
+
+
+
+
+Permission
+sudo chown -R $USER:$USER . => (when you run on the directory there you want otherwise give directory)
+chmod -R 775 storage bootstrap/cache
+
+# out side container
+docker exec -it project_app chmod -R 775 /var/www/storage
+docker exec -it project_app chmod -R 775 /var/www/bootstrap/cache
+docker exec -it project_app chown -R www-data:www-data /var/www/storage
+docker exec -it project_app chown -R www-data:www-data /var/www/bootstrap/cache
+
+# if inside container after exec
+chmod -R 775 /var/www/storage
+chmod -R 775 /var/www/bootstrap/cache
+chown -R www-data:www-data /var/www/storage
+chown -R www-data:www-data /var/www/bootstrap/cache
+
+# out side container
+docker exec -it project_app php artisan key:generate
+docker exec -it project_app php artisan storage:link
+docker exec -it project_app php artisan migrate
+
+# if inside container after exec
+php artisan key:generate
+php artisan storage:link
+php artisan migrate
+
+
+# for changing inside the container and get rid from the permission issue then do this because we havfe mounted
+docker exec -u $(id -u):$(id -g) -it project_app /bin/bash
+
+
+
+
+
+**Best DevOps Way (Even Better) for only locally**
+docker run --rm \
+  -u $(id -u):$(id -g) \
+  -v $(pwd):/app \
+  -w /app \
+  composer:2 create-project laravel/laravel my-app
+
+
+
+
+
+
+**if you run by mistake php artisan optimzie on locally then need to undo your laravel project in this way	**
+#inside container
+rm -rf bootstrap/cache/*.php
+rm -rf storage/framework/cache/*
+rm -rf storage/framework/views/*
+rm -rf storage/framework/sessions/*
+
+composer dump-autoload
+php artisan optimize:clear
+
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+docker-compose restart
+
+
+
+
+
+
+
+
+**Golden Rule For Local Dev**
+php artisan migrate
+php artisan cache:clear   (if needed)
+php artisan optimize:clear
+
+**And Avoid: on local**
+php artisan config:cache
+php artisan route:cache
+php artisan optimize
+rm bootstrap/cache/*
+
+
+
+**To check php file size upload limit inside container**
+php -i | grep upload_max_filesize
+php -i | grep post_max_size
+
+
+
+**Host nginx **
+sudo apt update
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo nano /etc/nginx/sites-available/project1.com
+
+server {
+    listen 80;
+    server_name project1.com www.project1.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+
+sudo ln -s /etc/nginx/sites-available/project1.com /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+
+sudo apt install python3-certbot-nginx -y
+
+
+sudo certbot --nginx -d project1.com -d www.project1.com
