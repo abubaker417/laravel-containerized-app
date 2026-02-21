@@ -7,7 +7,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www
-      - ./storage:/var/www/storage  
     depends_on:
       - mysql
     networks:
