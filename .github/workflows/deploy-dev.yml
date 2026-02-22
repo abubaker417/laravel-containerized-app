@@ -1,0 +1,39 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Dev Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_SERVER_IP }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/your-project
+
+            # pull latest code
+            git pull origin dev
+
+            # build and restart containers
+            docker-compose -f docker-compose.yml up -d --build
+
+            # run migrations
+            # docker exec project_app php artisan migrate --force
+
+            # clear cache
+            docker exec project_app php artisan config:clear
+            docker exec project_app php artisan cache:clear
+            docker exec project_app php artisan route:clear
+
+            echo "Dev deployment done!"
