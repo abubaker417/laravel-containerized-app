@@ -4,12 +4,10 @@ services:
     container_name: project_phpmyadmin
     restart: unless-stopped
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
+      PMA_HOST: ${DB_HOST}
+      PMA_PORT: ${DB_PORT}
     ports:
       - "5002:80"
-    depends_on:
-      - mysql
     networks:
       - project_network
 
