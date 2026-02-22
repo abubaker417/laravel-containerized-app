@@ -9,6 +9,13 @@ docker run --rm \
 
 
 Permission
+# Add ubuntu user to docker group
+sudo usermod -aG docker $USER
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
 sudo chown -R $USER:$USER . => (when you run on the directory there you want otherwise give directory)
 chmod -R 775 storage bootstrap/cache
 
@@ -106,6 +113,9 @@ sudo nano /etc/nginx/sites-available/project1.com
 server {
     listen 80;
     server_name project1.com www.project1.com;
+
+    # upload size limit
+    client_max_body_size 10M;
 
     location / {
         proxy_pass http://127.0.0.1:5001;
