@@ -1,12 +1,10 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
     container_name: project_app
     restart: unless-stopped
-    volumes:
-      - ./:/var/www
+    env_file:
+      - .env 
     networks:
       - project_network
 
@@ -17,7 +15,6 @@ services:
     ports:
       - "5001:80"
     volumes:
-      - ./:/var/www
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - app
