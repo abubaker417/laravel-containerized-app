@@ -22,13 +22,14 @@
         <tr>
             <td>{{ $doc->title }}</td>
             <td>
-                <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">View File</a>
+                <a href="{{ Storage::disk('s3')->url($doc->file_path) }}" target="_blank">View File</a>
             </td>
             <td>
                 <form action="{{ route('documents.destroy', $doc->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit">Delete</button>
+                    <a href="{{ route('documents.download', $doc) }}" target="_blank">Download File</a>
                 </form>
             </td>
         </tr>
