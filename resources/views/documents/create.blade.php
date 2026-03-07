@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+
+    <!-- jQuery (Toastr requires it) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </head>
 <body>
     <h1>Upload New Document</h1>
@@ -97,8 +106,18 @@
                 // Sets +923001234567 format into hidden input for Laravel
                 document.querySelector("#phone_full").value = iti.getNumber();
             } else {
-                e.preventDefault(); // Stop form submit
-                alert("Please enter a valid phone number for the selected country.");
+                // e.preventDefault(); // Stop form submit
+                // alert("Please enter a valid phone number for the selected country.");
+                e.preventDefault();
+
+                // ← REPLACE alert() WITH THIS
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: "toast-top-right",
+                    timeOut: "4000",
+                };
+                toastr.error("Please enter a valid phone number for the selected country.");
             }
         });
     </script>
