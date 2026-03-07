@@ -15,12 +15,14 @@
     <table border="1" cellpadding="10">
         <tr>
             <th>Title</th>
+            <th>Phone</th>  
             <th>File</th>
             <th>Action</th>
         </tr>
         @foreach($documents as $doc)
         <tr>
             <td>{{ $doc->title }}</td>
+            <td>{{ $doc->phone ?? 'N/A' }}</td> 
             <td>
                 <a href="{{ Storage::disk('s3')->url($doc->file_path) }}" target="_blank">View File</a>
             </td>

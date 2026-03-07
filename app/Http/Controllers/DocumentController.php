@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use Illuminate\Support\Facades\Storage;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class DocumentController extends Controller
 {
@@ -24,6 +25,7 @@ class DocumentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'file' => 'required|file|mimes:png,jpg,jpeg,pdf|max:2048',
+            'phone' => ['required', 'string', new Phone],
         ]);
 
         $file = $request->file('file');
@@ -39,6 +41,7 @@ class DocumentController extends Controller
 
         Document::create([
             'title' => $request->title,
+            'phone'     => $request->phone,
             'file_path' => $filePath,
         ]);
 
