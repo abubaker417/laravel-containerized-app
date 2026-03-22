@@ -1,7 +1,12 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ STEP 1: Paste your Google verification tag here -->
+    <!-- Get this from: search.google.com/search-console → HTML tag method -->
+    <meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE">
 
     <!-- PRIMARY SEO TAGS -->
     <title>DevOps Lab | Web, Mobile & Cloud Solutions</title>
@@ -43,17 +48,17 @@
     @verbatim
     <script type="application/ld+json">
     {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "DevOps Lab",
-    "url": "https://devopslab.info",
-    "logo": "https://devopslab.info/favicon-32x32.png",
-    "description": "Professional web development, mobile app development, cloud solutions, and IT services.",
-    "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer support",
-        "availableLanguage": "English"
-    }
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "DevOps Lab",
+        "url": "https://devopslab.info",
+        "logo": "https://devopslab.info/favicon.ico",
+        "description": "Professional web development, mobile app development, cloud solutions, and IT services.",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "availableLanguage": "English"
+        }
     }
     </script>
     @endverbatim
@@ -152,7 +157,6 @@
     </style>
 </head>
 <body>
-
     <div class="container">
 
         <span class="badge">🚀 Now Live</span>
@@ -172,7 +176,12 @@
             <span class="tag">AWS Hosting</span>
         </div>
 
-    </div>
+        <a href="mailto:info@devopslab.info" class="btn">Contact Us</a>
 
+        <footer>
+            &copy; {{ date('Y') }} DevOps Lab. All rights reserved.
+        </footer>
+
+    </div>
 </body>
 </html>
