@@ -1,16 +1,16 @@
 services:
   app:
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:${IMAGE_TAG}
-    container_name: project_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
     restart: unless-stopped
-    env_file:
-      - .env 
     networks:
-      - project_network
+      - laravel_network
 
   nginx:
     image: nginx:alpine
-    container_name: project_nginx
+    container_name: laravel_nginx
     restart: unless-stopped
     ports:
       - "5001:80"
@@ -19,8 +19,8 @@ services:
     depends_on:
       - app
     networks:
-      - project_network
+      - laravel_network
 
 networks:
-  project_network:
+  laravel_network:
     driver: bridge
