@@ -12,7 +12,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Only register Telescope on non-production environments
+        if ($this->app->environment(['local', 'dev', 'staging', 'qa'])) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
+        }
     }
 
     /**
@@ -20,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (config('app.env') === 'production') {
+        if (config('app.env') === 'dev' || config('app.env') === 'staging' || config('app.env') === 'qa' || config('app.env') === 'production') {
             URL::forceScheme('https');
         }
     }
