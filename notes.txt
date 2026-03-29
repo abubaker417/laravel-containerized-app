@@ -136,3 +136,43 @@ sudo apt install python3-certbot-nginx -y
 
 
 sudo certbot --nginx -d project1.com -d www.project1.com
+
+
+
+
+===========================
+==========================
+docker-compose -f docker-compose.prod.yml run --rm app composer require laravel/telescope
+
+docker-compose -f docker-compose.prod.yml run --rm app php artisan telescope:install
+docker-compose -f docker-compose.prod.yml run --rm app php artisan migrate
+
+
+
+
+
+\# Step 1 - Remove corrupted vendor folder 
+
+docker-compose -f docker-compose.prod.yml run --rm app rm -rf /var/www/vendor 
+
+docker-compose -f docker-compose.prod.yml run --rm app rm -rf /var/www/composer.lock 
+
+docker-compose -f docker-compose.prod.yml run --rm app composer install --optimize-autoloader --no-dev
+
+docker-compose -f docker-compose.prod.yml run --rm app php artisan config:clear 
+
+docker-compose -f docker-compose.prod.yml run --rm app php artisan cache:clear
+
+
+
+
+
+php artisan migrate:status
+
+rm database/migrations/2026_03_29_192515_create_telescope_entries_table.php
+
+
+
+
+
+docker-compose -f docker-compose.prod.yml up -d --build --no-cache app
