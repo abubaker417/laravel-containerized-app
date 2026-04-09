@@ -2,13 +2,13 @@ FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
     git curl libpng-dev libjpeg-dev libonig-dev \
-    libxml2-dev zip unzip libzip-dev
+    libxml2-dev zip unzip libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# increase php upload limits
 RUN echo "upload_max_filesize=100M" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "post_max_size=100M" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "max_execution_time=300" >> /usr/local/etc/php/conf.d/uploads.ini \
@@ -16,27 +16,31 @@ RUN echo "upload_max_filesize=100M" >> /usr/local/etc/php/conf.d/uploads.ini \
 
 WORKDIR /var/www
 
+# Copy composer files first (better layer caching)
+COPY composer.json composer.lock ./
+
+# Install dependencies DURING BUILD (not at runtime)
+RUN composer install --optimize-autoloader --no-dev --no-scripts --no-interaction
+
+# Copy rest of application
 COPY . /var/www
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Run post-install scripts after full copy
+RUN composer run-script post-autoload-dump 2>/dev/null || true
 
-# This is the key part for permissions
+# Cache Laravel config/routes
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \
     && chmod -R 755 /var/www/bootstrap/cache
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Create EFS mount point directory
+# Create EFS mount point
 RUN mkdir -p /mnt/chroma
 
-# Expose port 8000
-EXPOSE 8000
+EXPOSE 9000
 
-# Start script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-CMD ["/start.sh"]
+CMD ["php-fpm"]
